@@ -1,0 +1,29 @@
+# ghera's proof, throwaway: PostgreSQL, and the drill run against it as a non-superuser owner.
+#
+#   docker compose run --rm drill     then   docker compose down -v
+#
+# The drill builds its own role and database, proves both fences (tests/drill.py says each check)
+# and drops them again. Nothing here is a production setting.
+name: ghera-demo
+
+services:
+  db:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust       # demo only: no password on a throwaway network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres"]
+      interval: 2s
+      retries: 30
+
+  drill:
+    image: python:3.12-slim
+    working_dir: /src/ghera
+    volumes:
+      - .:/src/ghera:ro
+    environment:
+      ADMIN_DSN: host=db user=postgres dbname=postgres
+      PYTHONDONTWRITEBYTECODE: "1"
+    command: ["sh", "-c", "pip install -q --root-user-action=ignore -r requirements.txt && python tests/drill.py"]
+    depends_on:
+      db: { condition: service_healthy }

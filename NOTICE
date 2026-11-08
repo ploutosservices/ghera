@@ -1,0 +1,8 @@
+ghera
+Copyright 2026 Ploutos Services LLC
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It runs on, and does not include, these third-party works, each under its own license:
+  psycopg2-binary (LGPL-3.0 with exceptions; it bundles libpq, PostgreSQL License), installed by
+  requirements.txt; and in the demo, the container images python:3.12-slim and postgres:16.4-alpine.
